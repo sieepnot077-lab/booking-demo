@@ -8,7 +8,7 @@
     <p class="eyebrow">Simple Flask + SQLite Demo</p>
     <h1>ฟอร์มจองคิวสำหรับลูกค้า</h1>
     <p class="muted">
-      เวอร์ชันนี้ตั้งใจทำให้เรียบง่ายก่อน ลูกค้าส่งคำขอจองคิว แล้วแอดมินเข้ามาเปลี่ยนสถานะภายหลังได้
+      ลูกค้ากรอกข้อมูลเพื่อจองคิวได้ทันที จากนั้นแอดมินจะเข้ามายืนยัน ดำเนินการ และเมื่อเสร็จสิ้นรายการจะถูกย้ายไปเก็บในประวัติอัตโนมัติ
     </p>
   </div>
 </section>
@@ -40,22 +40,49 @@
     <div class="field-row">
       <label>
         <span>วันที่จอง</span>
-        <input
-          type="date"
-          name="booking_date"
-          value="{{ form_data.booking_date if form_data else '' }}"
-          required
-        >
+        <div class="thai-date-selects">
+          <select name="booking_day" required>
+            <option value="">วัน</option>
+            {% for day in day_options %}
+              <option value="{{ day }}" {% if form_data.booking_day == day %}selected{% endif %}>{{ day }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="booking_month" required>
+            <option value="">เดือน</option>
+            {% for month in thai_month_options %}
+              <option value="{{ month.value }}" {% if form_data.booking_month == month.value %}selected{% endif %}>{{ month.label }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="booking_year" required>
+            <option value="">ปี พ.ศ.</option>
+            {% for year in thai_year_options %}
+              <option value="{{ year }}" {% if form_data.booking_year == year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <small class="field-help">เลือกวัน เดือน และปี พ.ศ. ได้โดยตรง</small>
       </label>
 
       <label>
         <span>เวลาจอง</span>
-        <input
-          type="time"
-          name="booking_time"
-          value="{{ form_data.booking_time if form_data else '' }}"
-          required
-        >
+        <div class="thai-time-selects">
+          <select name="booking_hour" required>
+            <option value="">ชั่วโมง</option>
+            {% for hour in hour_options %}
+              <option value="{{ hour }}" {% if form_data.booking_hour == hour %}selected{% endif %}>{{ hour }}</option>
+            {% endfor %}
+          </select>
+
+          <select name="booking_minute" required>
+            <option value="">นาที</option>
+            {% for minute in minute_options %}
+              <option value="{{ minute }}" {% if form_data.booking_minute == minute %}selected{% endif %}>{{ minute }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <small class="field-help">เลือกเวลาแบบ 24 ชั่วโมง โดยแบ่งทุก 15 นาที</small>
       </label>
     </div>
 
@@ -70,7 +97,7 @@
 
     <div class="actions">
       <button type="submit" class="primary-button">ยืนยันการจอง</button>
-      <a href="{{ url_for('admin_appointments') }}" class="secondary-link">ไปหน้าแอดมิน</a>
+      <a href="{{ url_for('admin_appointments') }}" class="secondary-link">ไปหน้าจัดการคิว</a>
     </div>
   </form>
 </section>

@@ -6,7 +6,7 @@
 <section class="panel success-panel">
   <p class="eyebrow">Booking Confirmed</p>
   <h1>บันทึกคำขอจองคิวเรียบร้อย</h1>
-  <p class="muted">นี่คือเดโมพื้นฐาน จึงตั้งสถานะเริ่มต้นเป็น <strong>{{ appointment.status }}</strong> อัตโนมัติ</p>
+  <p class="muted">สถานะเริ่มต้นของรายการนี้คือ <strong>{{ status_labels[appointment.status] }}</strong></p>
 
   <dl class="detail-grid">
     <div>
@@ -23,7 +23,7 @@
     </div>
     <div>
       <dt>วันและเวลา</dt>
-      <dd>{{ appointment.booking_date }} {{ appointment.booking_time }}</dd>
+      <dd>{{ appointment | thai_datetime }}</dd>
     </div>
     <div class="full-width">
       <dt>หมายเหตุ</dt>
@@ -33,7 +33,7 @@
 
   <div class="actions">
     <a href="{{ url_for('booking_form') }}" class="primary-button">จองคิวใหม่</a>
-    <a href="{{ url_for('admin_appointments') }}" class="secondary-link">เปิดหน้าแอดมิน</a>
+    <a href="{{ url_for('admin_appointments') }}" class="secondary-link">เปิดหน้าคิวปัจจุบัน</a>
   </div>
 </section>
 {% endblock %}

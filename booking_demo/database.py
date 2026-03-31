@@ -1,11 +1,14 @@
 import os
 import sqlite3
+import tempfile
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DEFAULT_DB_PATH = BASE_DIR / "booking.db"
+DEFAULT_DB_DIR = Path(tempfile.gettempdir()) / "booking_demo"
+DEFAULT_DB_PATH = DEFAULT_DB_DIR / "booking.db"
 SHARED_MEMORY_URI = "file:booking_demo?mode=memory&cache=shared"
+HISTORY_STATUSES = ("completed", "cancelled")
 _use_memory_db = False
 _keeper_connection = None
 
@@ -20,6 +23,7 @@ def get_connection():
         connection = sqlite3.connect(SHARED_MEMORY_URI, uri=True)
     else:
         db_path = os.environ.get("BOOKING_DB_PATH", str(DEFAULT_DB_PATH))
+        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         connection = sqlite3.connect(db_path)
 
     connection.row_factory = sqlite3.Row
@@ -85,9 +89,16 @@ def get_appointment(appointment_id):
         return dict(row) if row else None
 
 
-def get_appointments(status=None, booking_date=None):
+def get_appointments(status=None, booking_date=None, include_history=False):
     query = "SELECT * FROM appointments WHERE 1 = 1"
     params = []
+
+    if include_history:
+        query += " AND status IN (?, ?)"
+        params.extend(HISTORY_STATUSES)
+    else:
+        query += " AND status NOT IN (?, ?)"
+        params.extend(HISTORY_STATUSES)
 
     if status:
         query += " AND status = ?"

@@ -1,24 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}แอดมิน | Booking Demo{% endblock %}
+{% block title %}{% if is_history_view %}ประวัติการจอง{% else %}คิวปัจจุบัน{% endif %} | Booking Demo{% endblock %}
 
 {% block content %}
 <section class="panel">
   <div class="section-heading">
     <div>
-      <p class="eyebrow">Admin Panel</p>
-      <h1>รายการคิวทั้งหมด</h1>
+      <p class="eyebrow">{% if is_history_view %}History{% else %}Admin Panel{% endif %}</p>
+      <h1>{{ page_title }}</h1>
+      <p class="muted">{{ page_description }}</p>
     </div>
     <a href="{{ url_for('booking_form') }}" class="secondary-link">กลับไปหน้าจองคิว</a>
   </div>
 
-  <form method="get" action="{{ url_for('admin_appointments') }}" class="filter-form">
+  <form method="get" action="{% if is_history_view %}{{ url_for('admin_history') }}{% else %}{{ url_for('admin_appointments') }}{% endif %}" class="filter-form">
     <label>
       <span>กรองตามสถานะ</span>
       <select name="status">
         <option value="">ทั้งหมด</option>
         {% for status in status_options %}
-          <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status }}</option>
+          <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status_labels[status] }}</option>
         {% endfor %}
       </select>
     </label>
@@ -54,10 +55,10 @@
                 <strong>{{ appointment.customer_name }}</strong>
                 <div class="muted">{{ appointment.phone }}</div>
               </td>
-              <td>{{ appointment.booking_date }} {{ appointment.booking_time }}</td>
+              <td>{{ appointment | thai_datetime }}</td>
               <td>{{ appointment.note or '-' }}</td>
               <td>
-                <span class="status-chip status-{{ appointment.status }}">{{ appointment.status }}</span>
+                <span class="status-chip status-{{ appointment.status }}">{{ status_labels[appointment.status] }}</span>
               </td>
               <td>
                 <form
@@ -65,10 +66,11 @@
                   action="{{ url_for('change_appointment_status', appointment_id=appointment.id) }}"
                   class="status-form"
                 >
+                  <input type="hidden" name="redirect_to" value="{% if is_history_view %}admin_history{% else %}admin_appointments{% endif %}">
                   <select name="status">
-                    {% for status in status_options %}
+                    {% for status in ['pending', 'confirmed', 'completed', 'cancelled'] %}
                       <option value="{{ status }}" {% if appointment.status == status %}selected{% endif %}>
-                        {{ status }}
+                        {{ status_labels[status] }}
                       </option>
                     {% endfor %}
                   </select>
@@ -82,8 +84,14 @@
     </div>
   {% else %}
     <div class="empty-state">
-      <h2>ยังไม่มีรายการคิว</h2>
-      <p class="muted">ลองกลับไปเพิ่มการจองจากหน้าลูกค้าก่อน แล้วค่อยกลับมาหน้านี้</p>
+      <h2>{% if is_history_view %}ยังไม่มีประวัติรายการ{% else %}ยังไม่มีรายการคิวปัจจุบัน{% endif %}</h2>
+      <p class="muted">
+        {% if is_history_view %}
+          เมื่อคิวถูกเปลี่ยนเป็นเสร็จสิ้นหรือยกเลิก รายการจะถูกย้ายมาแสดงที่หน้านี้
+        {% else %}
+          ลองกลับไปเพิ่มการจองจากหน้าลูกค้าก่อน แล้วค่อยกลับมาหน้านี้
+        {% endif %}
+      </p>
     </div>
   {% endif %}
 </section>
