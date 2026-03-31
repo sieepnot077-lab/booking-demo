@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}จองสำเร็จ | Booking Demo{% endblock %}
+
+{% block content %}
+<section class="panel success-panel">
+  <p class="eyebrow">Booking Confirmed</p>
+  <h1>บันทึกคำขอจองคิวเรียบร้อย</h1>
+  <p class="muted">นี่คือเดโมพื้นฐาน จึงตั้งสถานะเริ่มต้นเป็น <strong>{{ appointment.status }}</strong> อัตโนมัติ</p>
+
+  <dl class="detail-grid">
+    <div>
+      <dt>เลขคิว</dt>
+      <dd>#{{ appointment.id }}</dd>
+    </div>
+    <div>
+      <dt>ชื่อลูกค้า</dt>
+      <dd>{{ appointment.customer_name }}</dd>
+    </div>
+    <div>
+      <dt>เบอร์โทร</dt>
+      <dd>{{ appointment.phone }}</dd>
+    </div>
+    <div>
+      <dt>วันและเวลา</dt>
+      <dd>{{ appointment.booking_date }} {{ appointment.booking_time }}</dd>
+    </div>
+    <div class="full-width">
+      <dt>หมายเหตุ</dt>
+      <dd>{{ appointment.note or '-' }}</dd>
+    </div>
+  </dl>
+
+  <div class="actions">
+    <a href="{{ url_for('booking_form') }}" class="primary-button">จองคิวใหม่</a>
+    <a href="{{ url_for('admin_appointments') }}" class="secondary-link">เปิดหน้าแอดมิน</a>
+  </div>
+</section>
+{% endblock %}

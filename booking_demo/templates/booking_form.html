@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}จองคิว | Booking Demo{% endblock %}
+
+{% block content %}
+<section class="panel hero-panel">
+  <div>
+    <p class="eyebrow">Simple Flask + SQLite Demo</p>
+    <h1>ฟอร์มจองคิวสำหรับลูกค้า</h1>
+    <p class="muted">
+      เวอร์ชันนี้ตั้งใจทำให้เรียบง่ายก่อน ลูกค้าส่งคำขอจองคิว แล้วแอดมินเข้ามาเปลี่ยนสถานะภายหลังได้
+    </p>
+  </div>
+</section>
+
+<section class="panel">
+  <form method="post" action="{{ url_for('book_appointment') }}" class="booking-form">
+    <label>
+      <span>ชื่อลูกค้า</span>
+      <input
+        type="text"
+        name="customer_name"
+        value="{{ form_data.customer_name if form_data else '' }}"
+        placeholder="เช่น สมชาย ใจดี"
+        required
+      >
+    </label>
+
+    <label>
+      <span>เบอร์โทร</span>
+      <input
+        type="text"
+        name="phone"
+        value="{{ form_data.phone if form_data else '' }}"
+        placeholder="08x-xxx-xxxx"
+        required
+      >
+    </label>
+
+    <div class="field-row">
+      <label>
+        <span>วันที่จอง</span>
+        <input
+          type="date"
+          name="booking_date"
+          value="{{ form_data.booking_date if form_data else '' }}"
+          required
+        >
+      </label>
+
+      <label>
+        <span>เวลาจอง</span>
+        <input
+          type="time"
+          name="booking_time"
+          value="{{ form_data.booking_time if form_data else '' }}"
+          required
+        >
+      </label>
+    </div>
+
+    <label>
+      <span>หมายเหตุ</span>
+      <textarea
+        name="note"
+        rows="4"
+        placeholder="ระบุรายละเอียดเพิ่มเติมได้"
+      >{{ form_data.note if form_data else '' }}</textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit" class="primary-button">ยืนยันการจอง</button>
+      <a href="{{ url_for('admin_appointments') }}" class="secondary-link">ไปหน้าแอดมิน</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

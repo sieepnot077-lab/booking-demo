@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+booking.db
+booking.db-journal
+write-test.txt

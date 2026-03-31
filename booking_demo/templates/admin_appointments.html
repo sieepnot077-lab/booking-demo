@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}แอดมิน | Booking Demo{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Admin Panel</p>
+      <h1>รายการคิวทั้งหมด</h1>
+    </div>
+    <a href="{{ url_for('booking_form') }}" class="secondary-link">กลับไปหน้าจองคิว</a>
+  </div>
+
+  <form method="get" action="{{ url_for('admin_appointments') }}" class="filter-form">
+    <label>
+      <span>กรองตามสถานะ</span>
+      <select name="status">
+        <option value="">ทั้งหมด</option>
+        {% for status in status_options %}
+          <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      <span>กรองตามวันที่</span>
+      <input type="date" name="date" value="{{ selected_date }}">
+    </label>
+
+    <button type="submit" class="primary-button small">ค้นหา</button>
+  </form>
+</section>
+
+<section class="panel">
+  {% if appointments %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>เลขคิว</th>
+            <th>ลูกค้า</th>
+            <th>วันนัด</th>
+            <th>หมายเหตุ</th>
+            <th>สถานะ</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for appointment in appointments %}
+            <tr>
+              <td>#{{ appointment.id }}</td>
+              <td>
+                <strong>{{ appointment.customer_name }}</strong>
+                <div class="muted">{{ appointment.phone }}</div>
+              </td>
+              <td>{{ appointment.booking_date }} {{ appointment.booking_time }}</td>
+              <td>{{ appointment.note or '-' }}</td>
+              <td>
+                <span class="status-chip status-{{ appointment.status }}">{{ appointment.status }}</span>
+              </td>
+              <td>
+                <form
+                  method="post"
+                  action="{{ url_for('change_appointment_status', appointment_id=appointment.id) }}"
+                  class="status-form"
+                >
+                  <select name="status">
+                    {% for status in status_options %}
+                      <option value="{{ status }}" {% if appointment.status == status %}selected{% endif %}>
+                        {{ status }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="primary-button small">อัปเดต</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h2>ยังไม่มีรายการคิว</h2>
+      <p class="muted">ลองกลับไปเพิ่มการจองจากหน้าลูกค้าก่อน แล้วค่อยกลับมาหน้านี้</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
